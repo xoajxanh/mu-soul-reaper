@@ -1,0 +1,25 @@
+# Ignore all APK / XAPK files (base APK is stored on Drive)
+*.apk
+*.xapk
+
+# Ignore output, decompiled, and emulator shared folders
+/released/
+/decompiled/
+/shared-emulator/
+
+# Ignore extracted files EXCEPT /extracted/tools
+/extracted/*
+!/extracted/tools/
+!/extracted/tools/**
+
+# Ignore temporary compile & build outputs (keep /compiled/tools and /build tools)
+/compiled/*
+!/compiled/tools/
+!/compiled/tools/**
+/build/temp/
+
+# Node.js / Next.js cache & node_modules
+**/node_modules/
+**/.next/
+*.tsbuildinfo
+

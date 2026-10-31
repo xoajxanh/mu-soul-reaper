@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  username     String      @unique
+  passwordHash String
+  displayName  String
+  role         String      // "ADMIN" or "SALE"
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  tokens       Token[]     @relation("UserTokens")
+  tokenNotes   TokenNote[] @relation("UserTokenNotes")
+  messageTemplates MessageTemplate[] @relation("UserMessageTemplates")
+}
+
+model VipPackage {
+  id                 String   @id @default(uuid())
+  name               String
+  durationDays       Float
+  fovMin             Int      @default(20)
+  fovMax             Int      @default(90)
+  bossRefreshMin     Int      @default(1)
+  bossRefreshMax     Int      @default(60)
+  maxMoveSpeed       Float    @default(2.5)
+  maxAttackSpeed     Float    @default(2.5)
+  maxMonsterRange    Int      @default(50)
+  maxPickupCount     Int      @default(100)
+  pickupDelayMin     Int      @default(100)
+  pickupDelayMax     Int      @default(500)
+  activeTabBasic     Boolean  @default(true)
+  activeTabAdvanced  Boolean  @default(true)
+  activeTabAutofarm  Boolean  @default(true)
+  price              Float    @default(0)
+  createdAt          DateTime @default(now())
+  tokens             Token[]
+}
+
+model Token {
+  id                      String      @id @default(uuid())
+  tokenKey                String      @unique @default(uuid())
+  deviceSnMd5             String
+  characterUid            String
+  packageId               String?
+  vipPackage              VipPackage? @relation(fields: [packageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  durationDays            Float
+  expireAt                DateTime
+  fovMin                  Int         @default(20)
+  fovMax                  Int         @default(90)
+  bossRefreshMin          Int         @default(1)
+  bossRefreshMax          Int         @default(60)
+  maxMoveSpeed            Float       @default(2.5)
+  maxAttackSpeed          Float       @default(2.5)
+  maxMonsterRange         Int         @default(50)
+  maxPickupCount          Int         @default(100)
+  pickupDelayMin          Int         @default(100)
+  pickupDelayMax          Int         @default(500)
+  activeTabBasic          Boolean     @default(true)
+  activeTabAdvanced       Boolean     @default(true)
+  activeTabAutofarm       Boolean     @default(true)
+  characterReincarnation          Int         @default(8)
+  characterReincarnationSecondary Int         @default(7)
+  adminTelegrams          String      @default("[\"@admin1\", \"@admin2\"]")
+  price                   Float       @default(0)
+  isCustom                Boolean     @default(false)
+  customerName            String?
+  isTest                  Boolean     @default(false)
+  isDeleted               Boolean     @default(false)
+  deletedAt               DateTime?
+  type                    String      @default("CUSTOMER") // "CUSTOMER" | "SVIP"
+  encryptedToken          String      @db.NVarChar(Max)
+  createdById             String
+  createdBy               User        @relation("UserTokens", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  lastOnline              DateTime?
+  lastCharacterName       String?
+  lastServerName          String?
+  notes                   TokenNote[]
+
+  parentId                String?
+  parent                  Token?      @relation("ParentChildTokens", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children                Token[]     @relation("ParentChildTokens")
+
+  @@index([deviceSnMd5, characterUid])
+  @@index([type])
+}
+
+model TokenNote {
+  id          String   @id @default(uuid())
+  tokenId     String
+  token       Token    @relation(fields: [tokenId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdById String
+  createdBy   User     @relation("UserTokenNotes", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  action      String   // CREATE, UPDATE, SOFT_DELETE, HARD_DELETE, RESTORE
+  detail      String   @db.NVarChar(Max)
+  createdAt   DateTime @default(now())
+}
+
+model TelegramContact {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  name      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model MessageTemplate {
+  id          String   @id @default(uuid())
+  title       String
+  shortcut    String?
+  category    String   @default("BÁO GIÁ")
+  content     String   @db.NVarChar(Max)
+  imageUrl    String?  @db.NVarChar(Max)
+  isGlobal    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdById String
+  createdBy   User     @relation("UserMessageTemplates", fields: [createdById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DeviceLoginHistory {
+  id            String   @id @default(uuid())
+  deviceSnMd5   String
+  characterUid  String
+  characterName String?
+  serverName    String?
+  status        String   // "SUCCESS" | "FAILED"
+  type          String   @default("CUSTOMER") // "CUSTOMER" | "SVIP"
+  createdAt     DateTime @default(now())
+
+  @@index([deviceSnMd5])
+  @@index([createdAt])
+  @@index([type])
+}

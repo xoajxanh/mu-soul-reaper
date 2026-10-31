@@ -1,0 +1,61 @@
+=========================================================================
+>>> CHAN DOAN TOAN DIEN: TAT CA DOI TUONG & ITEM TREN DAT <<<
+Thoi gian: 2026/10/28 22:27:04
+=========================================================================
+Map ID: 260001 | Toa do nhan vat: (80, 105) | World Pos: (80.50, 2.21, 105.50)
+
+--- [PHAN 1] ViewData.GetGameObjectsInView() ---
+  [MONSTER #1] ID=317441247232 | CfgId=20220001 | Ten='Thần Rồng Vàng' | HP=0 | Pos=(78, 109)
+  [MONSTER #2] ID=5944970060870725902 | CfgId=0 | Ten='Gamer22' | HP=978887 | Pos=(80, 105)
+  [DROP_ITEM #1] ID=5944970078628420671 | ItemId/CfgId=1000021 | Ten='Vàng Khoá' | SL=50000 | Pos=(78, 109) | Type=103 | isMonsterDeath=true | Owner=table: 0x7636ec622a40 | WholeOwner=0
+  => Tong ket ViewData: 3 doi tuong (DropItems: 1, Monsters: 2, NPCs: 0, Khac: 0)
+
+--- [PHAN 2] VipManager Upvalues ---
+  Upvalue #1: 'vipAutoPickDropItems' (table, 1 phan tu)
+    -> Item ID=5944970078628420671 | CfgId=1000021 | Ten='Vàng Khoá' | Pos=(78, 109)
+  Upvalue #2: '_ENV' (table, 1845 phan tu)
+    -> Item ID=HolySkeletonPlace | CfgId=0 | Ten='' | Pos=(0, 0)
+
+--- [PHAN 3] DropItemManager (Upvalues & Root GO) ---
+  Upvalue #1: 'dropItems' (table, 0 phan tu)
+  Root GO 'DropItemManager': childCount = 1
+    Child #0: Name='DropItemRoot', Active=true, Pos=(0.00, 0.00, 0.00)
+
+--- [PHAN 4] PickupManager (dropSceneCellPos) ---
+  Upvalue #1: 'dropSceneCellPos' (co 0 cell, tong 0 item)
+  Upvalue #2: 'this' (co 2 cell, tong 0 item)
+
+--- [PHAN 5] RoleManager (Tat ca Role Types) ---
+  RoleType=2 (Monster) #1: ID=317441247232 | CfgId=20220001 | Ten='Thần Rồng Vàng' | HP=0 | isDead=true | Pos=(78, 109)
+  => RoleType=2 (Monster): tong cong 1 doi tuong
+
+--- [PHAN 6] Unity Scene GameObjects (Keyword Search) ---
+  Match #1: Name='ItemModel' | Parent='Model' | Active=true | Pos=(78.50, 2.21, 109.50)
+  Match #2: Name='Item' | Parent='PoolManagerTest' | Active=true | Pos=(-10000.00, -10000.00, -10000.00)
+  Match #3: Name='toplogoDropItem' | Parent='Vàng Khoá' | Active=true | Pos=(78.50, 2.51, 109.50)
+  Match #4: Name='DropItemRoot' | Parent='DropItemManager' | Active=true | Pos=(0.00, 0.00, 0.00)
+  Match #5: Name='btn_TaskItem' | Parent='Content' | Active=true | Pos=(633.64, 360.72, 99.99)
+  Match #6: Name='btn_TaskItem' | Parent='Content' | Active=true | Pos=(633.64, 361.72, 99.99)
+  Match #7: Name='btn_TaskItem' | Parent='Content' | Active=true | Pos=(633.64, 362.72, 99.99)
+  Match #8: Name='btn_TaskItem' | Parent='Content' | Active=true | Pos=(633.64, 363.72, 99.99)
+  Match #9: Name='btn_useItem4' | Parent='go_fastUseItem' | Active=true | Pos=(641.13, 355.50, 97.07)
+  Match #10: Name='btn_useItem3' | Parent='go_fastUseItem' | Active=true | Pos=(640.28, 355.50, 97.07)
+  Match #11: Name='btn_useItem2' | Parent='go_fastUseItem' | Active=true | Pos=(639.43, 355.50, 97.07)
+  Match #12: Name='btn_useItem1' | Parent='go_fastUseItem' | Active=true | Pos=(638.57, 355.50, 97.07)
+  Match #13: Name='go_fastUseItem' | Parent='go_bottom' | Active=true | Pos=(639.85, 355.40, 97.07)
+  Match #14: Name='btn_GoldenHunt' | Parent='go_activity' | Active=true | Pos=(635.72, 364.41, 100.00)
+  Match #15: Name='SpriteMesh-shieldbg' | Parent='SpriteMesh-shield' | Active=true | Pos=(80.47, 4.25, 105.52)
+  Match #16: Name='SpriteMesh-shield' | Parent='toplogoPlayer' | Active=true | Pos=(80.48, 4.25, 105.52)
+  Match #17: Name='SpriteMesh-hpbg' | Parent='SpriteMesh-hp' | Active=true | Pos=(80.50, 4.21, 105.50)
+  Match #18: Name='SpriteMesh-hp' | Parent='toplogoPlayer' | Active=true | Pos=(80.50, 4.21, 105.50)
+  Match #19: Name='DropItemManager' | Parent='None' | Active=true | Pos=(0.00, 0.00, 0.00)
+  => Tong GameObjects khop tu khoa: 19
+
+=========================================================================
+>>> TONG HOP VAT PHAM TIM THAY DE HUT: 3 <<<
+=========================================================================
+  * ITEM HUT: ID=5944970078628420671 | ItemId=1000021 | Ten='Vàng Khoá' | Pos=(78, 109) | Nguon=ViewData
+  * ITEM HUT: ID=HolySkeletonPlace | ItemId=0 | Ten='' | Pos=(0, 0) | Nguon=VipManager._ENV
+--- THUC THI GOI TIN HUT VAT PHAM ---
+  [3] Da gui cac goi don le ReqPickUpMapItem cho tung item.
+  [4] Dang di chuyen MoveTo toi toa do (78, 109), cu ly: 4

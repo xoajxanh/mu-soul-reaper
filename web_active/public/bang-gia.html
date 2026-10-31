@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BẢNG GIÁ TOOL MU VĨNH HẰNG - VỤT MOD TEAM</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="./logo.png" type="image/png">
+
+  <!-- Google Fonts: Cinzel, Cinzel Decorative, Be Vietnam Pro, Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Capture & Asset Scripts (Offline compatible) -->
+  <script src="./js/assets-data.js"></script>
+  <script src="./js/html-to-image.min.js"></script>
+  <script src="./js/html2canvas.min.js"></script>
+
+  <script>
+    // Tự động gán ngay hình nền Base64 để triệt tiêu hoàn toàn lỗi CORS / Tainted Canvas trên file:///
+    if (window.BG_IMAGE_DATA) {
+      const bgStyle = document.createElement('style');
+      bgStyle.id = 'inlineBgStyle';
+      bgStyle.textContent = `.capture-bg-layer { background-image: url("${window.BG_IMAGE_DATA}") !important; }`;
+      document.head.appendChild(bgStyle);
+    }
+  </script>
+
+  <style>
+    /* ========================================================================= */
+    /* [RESET & ROOT VARIABLES]                                                 */
+    /* ========================================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    :root {
+      --gold-light: #fff3a8;
+      --gold-main: #f5b324;
+      --gold-dark: #996207;
+      --gold-border: #d4a342;
+      
+      --blue-vip: #2575fc;
+      --blue-vip-dark: #0c182b;
+      --blue-glow: rgba(37, 117, 252, 0.45);
+
+      --font-title: 'Cinzel Decorative', 'Cinzel', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-sub: 'Be Vietnam Pro', 'Montserrat', sans-serif;
+      --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: #06080d;
+      font-family: var(--font-body);
+      color: #e5e7eb;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* Capture Zone (Enclosing Background + Information for Screenshot) */
+    .capture-zone {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+      min-height: 100vh;
+    }
+
+    .capture-bg-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: url('./images/bg-mu.jpg');
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+    }
+
+    .capture-bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(circle at 50% 25%, rgba(6, 9, 16, 0.25) 0%, rgba(3, 5, 10, 0.78) 70%, rgba(1, 2, 5, 0.95) 100%),
+                  linear-gradient(to bottom, rgba(4, 6, 12, 0.3) 0%, rgba(3, 5, 10, 0.65) 55%, rgba(2, 3, 6, 0.96) 100%);
+      pointer-events: none;
+    }
+
+    /* Ambient Floating Embers Canvas */
+    #embersCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Top Control Buttons */
+    .top-bar {
+      position: fixed;
+      top: 14px;
+      right: 20px;
+      z-index: 50;
+      display: flex;
+      gap: 10px;
+    }
+
+    .control-btn {
+      background: rgba(16, 20, 28, 0.88);
+      border: 1px solid rgba(212, 163, 66, 0.5);
+      color: #f7d984;
+      padding: 7px 15px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    }
+
+    .control-btn:hover {
+      background: rgba(30, 36, 52, 0.95);
+      border-color: #ffd86b;
+      box-shadow: 0 0 15px rgba(255, 200, 59, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Layout Toggle: 2 Cards vs 3 Cards */
+    .layout-toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 14px;
+      z-index: 10;
+    }
+
+    .toggle-pill {
+      background: rgba(10, 13, 20, 0.82);
+      border: 1.5px solid rgba(212, 163, 66, 0.45);
+      padding: 4px;
+      border-radius: 30px;
+      display: flex;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+    }
+
+    .toggle-item {
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #d1b47c;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toggle-item.active {
+      background: linear-gradient(135deg, #fce289 0%, #d49a26 50%, #996207 100%);
+      color: #1a0e02;
+      box-shadow: 0 2px 10px rgba(255, 195, 45, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* Main Container */
+    .main-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1380px;
+      padding: 20px 20px 60px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ========================================================================= */
+    /* [BRAND HEADER]                                                           */
+    /* ========================================================================= */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .brand-logo-small {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 14px rgba(255, 200, 59, 0.75));
+      margin-bottom: 6px;
+      animation: floatLogo 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatLogo {
+      0% { transform: translateY(0px); filter: drop-shadow(0 0 12px rgba(255, 200, 59, 0.6)); }
+      100% { transform: translateY(-4px); filter: drop-shadow(0 0 22px rgba(255, 215, 80, 0.95)); }
+    }
+
+    /* "VỤT MOD TEAM" 3D Metallic Carved Text */
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: clamp(36px, 5.8vw, 72px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      line-height: 1.05;
+      text-transform: uppercase;
+      position: relative;
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 25%, #94a3b8 48%, #f8df98 52%, #f5b324 75%, #8c5409 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.95))
+              drop-shadow(0 8px 18px rgba(0, 0, 0, 0.95))
+              drop-shadow(0 0 25px rgba(255, 210, 80, 0.35));
+      margin-bottom: 6px;
+    }
+
+    /* Subtitles: "BẢNG GIÁ TOOL" & "MU VĨNH HẰNG" */
+    .brand-subtitle-1 {
+      font-family: var(--font-sub);
+      font-size: clamp(22px, 3.4vw, 38px);
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffb72b;
+      text-shadow: 0 0 12px rgba(255, 175, 20, 0.85),
+                   0 0 25px rgba(255, 140, 0, 0.6),
+                   0 3px 6px rgba(0, 0, 0, 0.95);
+      line-height: 1.15;
+    }
+
+    .brand-subtitle-2 {
+      font-family: var(--font-sub);
+      font-size: clamp(26px, 4.2vw, 48px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #fff7c2 0%, #ffc83b 40%, #ff8c00 80%, #b85000 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 16px rgba(255, 180, 0, 0.8))
+              drop-shadow(0 4px 8px rgba(0, 0, 0, 0.95));
+      line-height: 1.35;
+      padding-top: 6px;
+      padding-bottom: 4px;
+      display: inline-block;
+    }
+
+    .header-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 460px;
+      margin-top: 10px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(255, 200, 59, 0.8), transparent);
+    }
+
+    .divider-gem {
+      width: 10px;
+      height: 10px;
+      background: #ffc83b;
+      transform: rotate(45deg);
+      box-shadow: 0 0 10px #ffc83b;
+    }
+
+    /* ========================================================================= */
+    /* [PRICING GRID & CARDS]                                                   */
+    /* ========================================================================= */
+    .pricing-grid {
+      display: grid;
+      width: 100%;
+      margin-top: 28px;
+      gap: 28px;
+      align-items: stretch;
+      justify-content: center;
+      transition: all 0.4s ease;
+    }
+
+    /* 2 Cards layout (Exactly like reference photo) */
+    .pricing-grid.grid-2 {
+      grid-template-columns: repeat(2, minmax(320px, 470px));
+      max-width: 1000px;
+    }
+
+    /* 3 Cards layout (+ Super VIP) */
+    .pricing-grid.grid-3 {
+      grid-template-columns: repeat(3, minmax(290px, 420px));
+      max-width: 1320px;
+    }
+
+    @media (max-width: 960px) {
+      .pricing-grid.grid-2,
+      .pricing-grid.grid-3 {
+        grid-template-columns: minmax(300px, 520px);
+      }
+    }
+
+    /* Ornate Fantasy Card Base */
+    .pricing-card {
+      position: relative;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      padding: 60px 24px 26px 24px;
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* Corner Ornaments */
+    .card-corner {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .corner-tl { top: -2px; left: -2px; }
+    .corner-tr { top: -2px; right: -2px; transform: scaleX(-1); }
+    .corner-bl { bottom: -2px; left: -2px; transform: scaleY(-1); }
+    .corner-br { bottom: -2px; right: -2px; transform: scale(-1, -1); }
+
+    /* ---------------- CARD 1: BẢN THƯỜNG (BRONZE GOLD) ---------------- */
+    .card-standard {
+      background: linear-gradient(180deg, rgba(26, 17, 12, 0.94) 0%, rgba(16, 11, 8, 0.96) 50%, rgba(9, 6, 4, 0.98) 100%);
+      border: 2px solid #b88628;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85),
+                  inset 0 0 35px rgba(184, 134, 40, 0.22),
+                  0 0 18px rgba(184, 134, 40, 0.3);
+    }
+
+    .card-standard::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(247, 217, 132, 0.35);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-standard:hover {
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.9),
+                  inset 0 0 45px rgba(255, 200, 59, 0.32),
+                  0 0 30px rgba(255, 185, 45, 0.5);
+      border-color: #f7d984;
+    }
+
+    /* ---------------- CARD 2: BẢN VIP (SAPPHIRE GOLD) ---------------- */
+    .card-vip {
+      background: linear-gradient(180deg, rgba(10, 20, 38, 0.94) 0%, rgba(6, 12, 26, 0.96) 50%, rgba(3, 7, 16, 0.98) 100%);
+      border: 2px solid #2d72d9;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85),
+                  inset 0 0 35px rgba(37, 117, 252, 0.28),
+                  0 0 26px rgba(37, 117, 252, 0.45);
+    }
+
+    .card-vip::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(135, 192, 255, 0.4);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-vip:hover {
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.9),
+                  inset 0 0 45px rgba(50, 135, 255, 0.38),
+                  0 0 38px rgba(50, 140, 255, 0.65);
+      border-color: #7bb5ff;
+    }
+
+    /* ---------------- CARD 3: SUPER VIP (MYSTIC PURPLE) ---------------- */
+    .card-super {
+      background: linear-gradient(180deg, rgba(28, 10, 34, 0.94) 0%, rgba(16, 6, 20, 0.96) 50%, rgba(8, 3, 12, 0.98) 100%);
+      border: 2px solid #9c27b0;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85),
+                  inset 0 0 35px rgba(186, 104, 200, 0.25),
+                  0 0 26px rgba(186, 104, 200, 0.38);
+    }
+
+    .card-super::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(230, 140, 255, 0.4);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .card-super:hover {
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.9),
+                  inset 0 0 45px rgba(210, 80, 255, 0.4),
+                  0 0 38px rgba(210, 80, 255, 0.65);
+      border-color: #e28aff;
+    }
+
+    /* ========================================================================= */
+    /* [CARD HEADER BADGES]                                                     */
+    /* ========================================================================= */
+    .card-header-badge {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 30px 6px 14px;
+      border-radius: 8px;
+      z-index: 10;
+      white-space: nowrap;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Badge Standard */
+    .badge-standard {
+      background: linear-gradient(180deg, #3d2917 0%, #1f140a 100%);
+      border: 2px solid #e5a93c;
+      box-shadow: 0 0 18px rgba(229, 169, 60, 0.45), 0 8px 16px rgba(0,0,0,0.8);
+    }
+
+    /* Badge VIP */
+    .badge-vip {
+      background: linear-gradient(180deg, #0d1e38 0%, #050d1a 100%);
+      border: 2px solid #5599ff;
+      box-shadow: 0 0 22px rgba(50, 135, 255, 0.5), 0 8px 16px rgba(0,0,0,0.8);
+    }
+
+    /* Badge Super */
+    .badge-super {
+      background: linear-gradient(180deg, #2e0f36 0%, #110416 100%);
+      border: 2px solid #d962ff;
+      box-shadow: 0 0 22px rgba(217, 98, 255, 0.5), 0 8px 16px rgba(0,0,0,0.8);
+    }
+
+    .badge-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .badge-icon-standard {
+      background: radial-gradient(circle, #fbd38d 0%, #b7791f 70%, #744210 100%);
+      border: 2px solid #ffe8a3;
+      box-shadow: 0 0 12px rgba(255, 215, 80, 0.7);
+    }
+
+    .badge-icon-vip {
+      background: radial-gradient(circle, #ffeaa7 0%, #e2a632 60%, #8c580d 100%);
+      border: 2px solid #fff3a8;
+      box-shadow: 0 0 14px rgba(255, 215, 80, 0.85);
+    }
+
+    .badge-icon-super {
+      background: radial-gradient(circle, #fbb6ce 0%, #b83280 70%, #521b41 100%);
+      border: 2px solid #fed7e2;
+      box-shadow: 0 0 14px rgba(214, 56, 149, 0.9);
+    }
+
+    .badge-title {
+      font-family: var(--font-sub);
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .badge-title-standard {
+      background: linear-gradient(180deg, #fff7c2 0%, #ffd066 50%, #c88316 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.9));
+    }
+
+    .badge-title-vip {
+      background: linear-gradient(180deg, #ffffff 0%, #a0caff 45%, #ffd466 70%, #c9881a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 8px rgba(66, 153, 225, 0.7));
+    }
+
+    .badge-title-super {
+      background: linear-gradient(180deg, #ffffff 0%, #f687b3 40%, #ffd466 75%, #d69e2e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 8px rgba(214, 56, 149, 0.7));
+    }
+
+    /* ========================================================================= */
+    /* [FEATURE ROWS & ICON STYLING]                                            */
+    /* ========================================================================= */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      margin-bottom: 22px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.2s ease;
+    }
+
+    .feature-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    /* 3D Graphic Icon Container */
+    .icon-container {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .icon-svg-art {
+      width: 50px;
+      height: 50px;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.8));
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .feature-item:hover .icon-svg-art {
+      transform: scale(1.15) rotate(3deg);
+    }
+
+    .feature-content {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #e2e8f0;
+    }
+
+    .feature-highlight {
+      font-weight: 700;
+      color: #fce79f;
+      display: inline;
+    }
+
+    .feature-highlight-vip {
+      font-weight: 700;
+      color: #e0f2fe;
+      display: inline;
+    }
+
+    .feature-highlight-super {
+      font-weight: 700;
+      color: #fbcfe8;
+      display: inline;
+    }
+
+    .feature-subtext {
+      font-size: 12.5px;
+      color: #94a3b8;
+      margin-top: 3px;
+      display: block;
+      line-height: 1.45;
+    }
+
+    /* ========================================================================= */
+    /* [PRICE PILL BUTTON]                                                      */
+    /* ========================================================================= */
+    .card-footer {
+      margin-top: auto;
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .price-pill {
+      width: 100%;
+      height: 50px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-sub);
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      text-decoration: none;
+    }
+
+    /* Brushed Gold Price Button (Bản Thường & Bản VIP like in photo) */
+    .price-gold {
+      background: linear-gradient(180deg, #fce289 0%, #e2a632 40%, #b27310 80%, #d49a26 100%);
+      color: #261502;
+      border: 1.5px solid #fff2a3;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75),
+                  0 0 16px rgba(245, 175, 35, 0.5),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.85);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .price-gold:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #fbd38d 35%, #c88316 75%, #edae3b 100%);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.85),
+                  0 0 28px rgba(255, 195, 45, 0.8),
+                  inset 0 1px 3px rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+    }
+
+    /* Super VIP Button */
+    .price-super {
+      background: linear-gradient(180deg, #e9d5ff 0%, #a855f7 40%, #7e22ce 80%, #9333ea 100%);
+      color: #1a0429;
+      border: 1.5px solid #f3e8ff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75),
+                  0 0 20px rgba(168, 85, 247, 0.55),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.85);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+      font-size: 22px;
+      letter-spacing: 2.5px;
+      white-space: nowrap;
+    }
+
+    .price-super:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #d8b4fe 35%, #9333ea 75%, #c084fc 100%);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.85),
+                  0 0 30px rgba(192, 132, 252, 0.85),
+                  inset 0 1px 3px rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+    }
+
+    /* Shimmer effect */
+    .price-pill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      transform: skewX(-25deg);
+      animation: btnShimmer 3.5s infinite;
+    }
+
+    @keyframes btnShimmer {
+      0% { left: -120%; }
+      20% { left: 140%; }
+      100% { left: 140%; }
+    }
+
+    .footer-guarantee {
+      font-size: 11.5px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer-guarantee svg {
+      width: 14px;
+      height: 14px;
+      fill: #48bb78;
+    }
+
+    /* ========================================================================= */
+    /* [BOTTOM CONTACT BANNER]                                                  */
+    /* ========================================================================= */
+    .contact-banner {
+      margin-top: 36px;
+      background: rgba(14, 18, 28, 0.88);
+      border: 1.5px solid rgba(212, 163, 66, 0.45);
+      border-radius: 12px;
+      padding: 16px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 6px;
+      max-width: 900px;
+      width: 100%;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      text-align: center;
+    }
+
+    .contact-title {
+      font-family: var(--font-body);
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffd066;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(255, 200, 59, 0.4);
+    }
+
+    .contact-desc {
+      font-size: 13.5px;
+      color: #cbd5e1;
+    }
+
+    /* Bottom Mode Switcher & Tools Container (Outside Crop Area) */
+    .bottom-toggle-wrapper {
+      margin-top: 36px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 50;
+    }
+
+    .bottom-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-capture {
+      background: linear-gradient(180deg, #ff4d4d 0%, #dc2626 50%, #991b1b 100%);
+      border: 1.5px solid #fca5a5;
+      color: #ffffff;
+      padding: 7px 22px;
+      border-radius: 30px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(220, 38, 38, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .btn-capture:hover {
+      background: linear-gradient(180deg, #ff6b6b 0%, #ef4444 50%, #b91c1c 100%);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .btn-capture:active {
+      transform: translateY(1px);
+    }
+
+    .btn-capture:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-capture-icon {
+      font-size: 16px;
+    }
+
+    .bottom-toggle-hint {
+      font-size: 12px;
+      color: #718096;
+      letter-spacing: 0.5px;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-contact {
+      padding: 9px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .btn-zalo {
+      background: #0068ff;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 104, 255, 0.4);
+    }
+
+    .btn-zalo:hover {
+      background: #1a7bff;
+      box-shadow: 0 0 18px rgba(0, 104, 255, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .btn-copy {
+      background: rgba(28, 34, 48, 0.9);
+      border: 1px solid rgba(255, 200, 59, 0.5);
+      color: #ffd066;
+    }
+
+    .btn-copy:hover {
+      background: rgba(42, 52, 74, 0.95);
+      border-color: #ffd066;
+      box-shadow: 0 0 14px rgba(255, 200, 59, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #ffc83b;
+      color: #ffd066;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 200, 59, 0.4);
+      z-index: 100;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Modal Buy/Contact */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: linear-gradient(180deg, #161b26 0%, #0d1017 100%);
+      border: 2px solid #e5a93c;
+      border-radius: 12px;
+      max-width: 440px;
+      width: 100%;
+      padding: 28px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(229, 169, 60, 0.35);
+      transform: scale(0.92);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffd066;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .modal-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-pkg-name {
+      color: #ffc83b;
+      font-weight: 700;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .contact-banner {
+        flex-direction: column;
+        text-align: center;
+      }
+      .contact-buttons {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Capture Zone: Bao trọn hình nền và toàn bộ nội dung hiển thị để xuất ảnh chuẩn -->
+  <div id="captureArea" class="capture-zone">
+    <div class="capture-bg-layer"></div>
+    <div class="capture-bg-overlay"></div>
+
+    <!-- Ambient Floating Embers Canvas -->
+    <canvas id="embersCanvas"></canvas>
+
+    <!-- Main Container -->
+    <div class="main-wrapper">
+
+    <!-- Header Section -->
+    <header class="brand-header">
+      <img src="./logo.png" id="brandLogoImg" alt="VỤT MOD TEAM LOGO" class="brand-logo-small">
+      <script>
+        if (window.LOGO_IMAGE_DATA) {
+          document.getElementById('brandLogoImg').src = window.LOGO_IMAGE_DATA;
+        }
+      </script>
+      <h1 class="brand-title">VỤT MOD TEAM</h1>
+      <h2 class="brand-subtitle-1">BẢNG GIÁ TOOL</h2>
+      <h3 class="brand-subtitle-2">MU VĨNH HẰNG</h3>
+      
+      <div class="header-divider">
+        <div class="divider-line"></div>
+        <div class="divider-gem"></div>
+        <div class="divider-line"></div>
+      </div>
+    </header>
+
+    <!-- Pricing Grid -->
+    <div class="pricing-grid grid-2" id="pricingGrid">
+
+      <!-- =================================================================== -->
+      <!-- CARD 1: BẢN THƯỜNG                                                 -->
+      <!-- =================================================================== -->
+      <div class="pricing-card card-standard">
+        <!-- SVG Corner Ornaments -->
+        <svg class="card-corner corner-tl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#goldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-tr" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#goldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-bl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#goldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-br" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#goldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fff" opacity="0.9"/>
+        </svg>
+
+        <!-- Top Badge -->
+        <div class="card-header-badge badge-standard">
+          <div class="badge-icon-wrap badge-icon-standard">
+            <!-- Steampunk Gears SVG -->
+            <svg viewBox="0 0 32 32" width="26" height="26">
+              <circle cx="16" cy="16" r="6" fill="#382103" stroke="#fbd38d" stroke-width="1.5"/>
+              <path d="M16 2 L16 6 M16 26 L16 30 M2 16 L6 16 M26 16 L30 16 M6 6 L9 9 M23 23 L26 26 M6 26 L9 23 M23 9 L26 6" stroke="#fbd38d" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="16" cy="16" r="2.5" fill="#fbd38d"/>
+            </svg>
+          </div>
+          <span class="badge-title badge-title-standard">BẢN THƯỜNG</span>
+        </div>
+
+        <!-- Features List -->
+        <div class="feature-list">
+          
+          <!-- Item 1: Ống nhòm viễn vọng (Thu phóng màn hình, Tốc độ) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity 3D Brass Telescope SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="teleBody1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fff2a3"/>
+                    <stop offset="35%" stop-color="#d49a26"/>
+                    <stop offset="70%" stop-color="#804e04"/>
+                    <stop offset="100%" stop-color="#422500"/>
+                  </linearGradient>
+                  <linearGradient id="teleLens" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#e0f2fe"/>
+                    <stop offset="40%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#0284c7"/>
+                  </linearGradient>
+                </defs>
+                <!-- Eyepiece -->
+                <rect x="10" y="44" width="8" height="12" rx="2" transform="rotate(-40 14 50)" fill="#78350f" stroke="#e5a93c" stroke-width="1.2"/>
+                <!-- Tube 1 (Narrow) -->
+                <rect x="16" y="34" width="14" height="15" rx="1.5" transform="rotate(-40 23 41.5)" fill="url(#teleBody1)" stroke="#ffe8a3" stroke-width="1"/>
+                <!-- Tube 2 (Medium) -->
+                <rect x="25" y="23" width="16" height="18" rx="2" transform="rotate(-40 33 32)" fill="url(#teleBody1)" stroke="#ffe8a3" stroke-width="1"/>
+                <!-- Tube 3 (Wide Front) -->
+                <rect x="36" y="10" width="18" height="22" rx="2.5" transform="rotate(-40 45 21)" fill="url(#teleBody1)" stroke="#ffe8a3" stroke-width="1.2"/>
+                <!-- Golden Rings -->
+                <ellipse cx="50" cy="15" rx="4" ry="11" transform="rotate(-40 50 15)" fill="url(#teleLens)" stroke="#fff" stroke-width="1.2"/>
+                <!-- Sparkle Flare -->
+                <polygon points="53,10 55,13 58,14 55,15 53,18 51,15 48,14 51,13" fill="#ffffff"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight">Thu phóng màn hình, Tốc Chạy, Tốc Đánh, Tầm Đánh</span>.
+              <span class="feature-subtext">Phát hiện mục tiêu kẻ địch từ khoảng cách cực xa.</span>
+            </div>
+          </div>
+
+          <!-- Item 2: Cuộn bản đồ cổ (Map Boss & Kundun) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Ancient Map Scroll SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="parchmentGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fff8db"/>
+                    <stop offset="50%" stop-color="#eed8a1"/>
+                    <stop offset="100%" stop-color="#c2a05d"/>
+                  </linearGradient>
+                </defs>
+                <!-- Rolled Scroll Body -->
+                <path d="M12 12 C12 8 20 12 28 9 C36 6 48 10 52 8 L50 48 C46 51 34 47 26 50 C18 53 10 49 10 53 Z" fill="url(#parchmentGrad)" stroke="#78350f" stroke-width="1.5"/>
+                <!-- Rolled Edges -->
+                <ellipse cx="51" cy="28" rx="2.5" ry="20" fill="#9a6728" opacity="0.5"/>
+                <ellipse cx="11" cy="33" rx="2.5" ry="20" fill="#9a6728" opacity="0.6"/>
+                <!-- Compass Rose -->
+                <circle cx="23" cy="23" r="7" fill="none" stroke="#b45309" stroke-width="1.2" stroke-dasharray="2 1"/>
+                <polygon points="23,17 24.5,22 23,24 21.5,22" fill="#dc2626"/>
+                <polygon points="23,29 24.5,24 23,22 21.5,24" fill="#1e3a8a"/>
+                <!-- Dashed Route -->
+                <path d="M23 26 Q 30 36 39 34" stroke="#78350f" stroke-width="1.5" stroke-dasharray="3 2" fill="none"/>
+                <!-- Red Treasure 'X' -->
+                <path d="M37 32 L43 38 M43 32 L37 38" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight">Bảng hiển thị chi tiết các MAP BOSS, KUNDUN, KUN phù văn</span>.
+              <span class="feature-subtext">Xem rõ Boss sống / Boss die, đếm ngược hồi sinh, click là tự tới.</span>
+            </div>
+          </div>
+
+          <!-- Item 3: Kiếm Khiên PK (Auto PK Guild & Khóa mục tiêu) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Crossed Swords & PK Shield SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="steelBlade" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#cbd5e1"/>
+                    <stop offset="100%" stop-color="#475569"/>
+                  </linearGradient>
+                  <linearGradient id="shieldRed" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#dc2626"/>
+                    <stop offset="50%" stop-color="#991b1b"/>
+                    <stop offset="100%" stop-color="#450a0a"/>
+                  </linearGradient>
+                </defs>
+                <!-- Sword 1 (TL to BR) -->
+                <path d="M10 10 L54 54 M10 14 L14 10 M8 8 L16 16" stroke="url(#steelBlade)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Sword 2 (TR to BL) -->
+                <path d="M54 10 L10 54 M50 10 L54 14 M48 16 L56 8" stroke="url(#steelBlade)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Golden Pommels -->
+                <circle cx="8" cy="8" r="3" fill="#e2a632"/>
+                <circle cx="56" cy="8" r="3" fill="#e2a632"/>
+                <!-- Ornate Knight Shield -->
+                <path d="M32 14 C44 14 48 20 48 30 C48 42 32 52 32 52 C32 52 16 42 16 30 C16 20 20 14 32 14 Z" fill="url(#shieldRed)" stroke="#f5b324" stroke-width="2"/>
+                <!-- Shield Inner Rim -->
+                <path d="M32 18 C40 18 44 23 44 30 C44 39 32 47 32 47 C32 47 20 39 20 30 C20 23 24 18 32 18 Z" fill="none" stroke="#fed7aa" stroke-width="1" opacity="0.6"/>
+                <!-- PK Text Engraved -->
+                <text x="32" y="36" font-family="'Cinzel', 'Montserrat', sans-serif" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">PK</text>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight">AUTO PK GUILD & AUTO Khóa mục tiêu</span>.
+              <span class="feature-subtext">Quét mục tiêu cực nhanh, chế độ Khóa SV, Khóa mục tiêu đơn.</span>
+            </div>
+          </div>
+
+          <!-- Item 4: Rương vàng & Ngọc Kundun (Nhặt đồ xịn) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Glowing Treasure Chest & Gems SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="chestWood" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#9a3412"/>
+                    <stop offset="50%" stop-color="#7c2d12"/>
+                    <stop offset="100%" stop-color="#431407"/>
+                  </linearGradient>
+                </defs>
+                <!-- Bottom Base -->
+                <path d="M10 30 H54 V52 C54 54 52 56 49 56 H15 C12 56 10 54 10 52 Z" fill="url(#chestWood)" stroke="#d49a26" stroke-width="2"/>
+                <!-- Chest Rim Bands -->
+                <rect x="18" y="30" width="5" height="26" fill="#e2a632"/>
+                <rect x="41" y="30" width="5" height="26" fill="#e2a632"/>
+                <!-- Glowing Loot / Gems inside -->
+                <polygon points="26,20 32,13 38,20 32,27" fill="#38bdf8"/>
+                <polygon points="18,22 23,17 27,24 20,27" fill="#f43f5e"/>
+                <polygon points="38,22 44,16 48,23 42,28" fill="#a855f7"/>
+                <circle cx="32" cy="18" r="3" fill="#fef08a"/>
+                <!-- Open Arched Lid -->
+                <path d="M8 29 C8 20 18 14 32 14 C46 14 56 20 56 29 L54 32 H10 Z" fill="url(#chestWood)" stroke="#f5b324" stroke-width="2"/>
+                <!-- Keyhole Plate -->
+                <circle cx="32" cy="36" r="3.5" fill="#fde047" stroke="#854d0e" stroke-width="1"/>
+                <rect x="31" y="36" width="2" height="4" fill="#854d0e"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight">AUTO Nhặt đồ xịn Kundun & phù văn trên 90%</span>.
+              <span class="feature-subtext">Tiếp cận Boss tháp siêu tốc, tự tìm Hỏa Long, tự mở rương vàng.</span>
+            </div>
+          </div>
+
+          <!-- Item 5: Tối ưu & Hồi sinh -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Divine Wings & Lightning SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="boltGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="40%" stop-color="#fef08a"/>
+                    <stop offset="80%" stop-color="#eab308"/>
+                    <stop offset="100%" stop-color="#ca8a04"/>
+                  </linearGradient>
+                </defs>
+                <!-- Wing Left -->
+                <path d="M30 36 C20 30 14 18 10 12 C16 18 20 28 26 34 Z" fill="#fef08a" opacity="0.6"/>
+                <!-- Wing Right -->
+                <path d="M34 36 C44 30 50 18 54 12 C48 18 44 28 38 34 Z" fill="#fef08a" opacity="0.6"/>
+                <!-- Glowing Golden Lightning Bolt -->
+                <polygon points="36,4 18,32 30,32 26,58 48,26 34,26" fill="url(#boltGrad)" stroke="#854d0e" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight">Tắt hiệu ứng game</span> mượt mà, giảm giật lag tối đa.
+              <span class="feature-subtext">Hồi sinh siêu tốc (Miễn phí & Kim Cương), tự động giữ nhịp farm.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer / Price Button -->
+        <div class="card-footer">
+          <a href="javascript:void(0)" class="price-pill price-gold" onclick="openOrderModal('Bản Thường', '400.000đ')">
+            GIÁ : 400K
+          </a>
+          <div class="footer-guarantee">
+            <svg viewBox="0 0 20 20"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm4.5 7.5l-6 6c-.3.3-.7.3-1 0l-3-3c-.3-.3-.3-.7 0-1s.7-.3 1 0l2.5 2.5 5.5-5.5c.3-.3.7-.3 1 0s.3.7 0 1z"/></svg>
+            Kích hoạt theo tài khoản • Hỗ trợ cập nhật liên tục
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- CARD 2: BẢN VIP                                                    -->
+      <!-- =================================================================== -->
+      <div class="pricing-card card-vip">
+
+        <!-- SVG Corner Ornaments -->
+        <svg class="card-corner corner-tl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#blueGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#a0caff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-tr" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#blueGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#a0caff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-bl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#blueGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#a0caff" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-br" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#blueGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#a0caff" opacity="0.9"/>
+        </svg>
+
+        <!-- Top Badge (Medallion with Crown & VIP text, exactly like photo) -->
+        <div class="card-header-badge badge-vip">
+          <div class="badge-icon-wrap badge-icon-vip">
+            <!-- Royal VIP Crown SVG -->
+            <svg viewBox="0 0 32 32" width="28" height="28">
+              <!-- Golden Crown -->
+              <path d="M6 22 L4 10 L10 16 L16 8 L22 16 L28 10 L26 22 Z" fill="#382103"/>
+              <!-- VIP Text -->
+              <text x="16" y="27" font-family="'Cinzel', 'Montserrat', sans-serif" font-size="8.5" font-weight="900" fill="#382103" text-anchor="middle">VIP</text>
+            </svg>
+          </div>
+          <span class="badge-title badge-title-vip">BẢN VIP</span>
+        </div>
+
+        <!-- Features List -->
+        <div class="feature-list">
+          
+          <!-- Item 1: Sách Phép Thuật Cổ (Bao Gồm Tất Cả Tính Năng Bản Thường) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Ancient Mystic Spellbook SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="bookCover" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#9a3412"/>
+                    <stop offset="50%" stop-color="#7c2d12"/>
+                    <stop offset="100%" stop-color="#451a03"/>
+                  </linearGradient>
+                </defs>
+                <!-- Tome Spine & Body -->
+                <path d="M12 10 C12 7 18 5 24 5 H52 V51 H24 C18 51 12 53 12 56 Z" fill="url(#bookCover)" stroke="#f5b324" stroke-width="2"/>
+                <!-- Pages Rim -->
+                <path d="M22 51 H52 V56 H22 C17 56 14 55 14 53 C14 52 17 51 22 51 Z" fill="#fef3c7" stroke="#b45309" stroke-width="1"/>
+                <!-- Gold Corner Brackets -->
+                <polygon points="46,5 52,5 52,11" fill="#fde047"/>
+                <polygon points="46,51 52,51 52,45" fill="#fde047"/>
+                <!-- Mystic Rune Circle -->
+                <circle cx="34" cy="27" r="10" fill="none" stroke="#60a5fa" stroke-width="1.8" stroke-dasharray="3 2"/>
+                <polygon points="34,19 37,33 26,24 42,24 31,33" fill="none" stroke="#93c5fd" stroke-width="1.5"/>
+                <circle cx="34" cy="27" r="2.5" fill="#38bdf8"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-vip">Bao Gồm các tính năng của bản thường</span>.
+              <span class="feature-subtext">Đầy đủ buff tốc chạy/đánh, tầm đánh, nhặt Kundun, map boss, auto PK.</span>
+            </div>
+          </div>
+
+          <!-- Item 2: Kim Long Săn Boss (Auto Săn Boss Thông Minh & %HP) -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Golden Dragon Boss Statue SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="dragonGold" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fff8db"/>
+                    <stop offset="35%" stop-color="#f5b324"/>
+                    <stop offset="70%" stop-color="#b45309"/>
+                    <stop offset="100%" stop-color="#451a03"/>
+                  </linearGradient>
+                </defs>
+                <!-- Pedestal -->
+                <ellipse cx="32" cy="54" rx="20" ry="6" fill="#78350f" stroke="#f5b324" stroke-width="1.5"/>
+                <!-- Dragon Body & Wings -->
+                <path d="M16 38 C14 26 22 18 30 14 C26 20 28 28 32 32 Z" fill="url(#dragonGold)"/>
+                <path d="M48 38 C50 26 42 18 34 14 C38 20 36 28 32 32 Z" fill="url(#dragonGold)"/>
+                <!-- Dragon Head & Horns -->
+                <path d="M32 10 C24 10 20 18 22 26 C24 34 32 40 32 40 C32 40 40 34 42 26 C44 18 40 10 32 10 Z" fill="url(#dragonGold)" stroke="#fde047" stroke-width="1.2"/>
+                <!-- Horns -->
+                <path d="M26 12 C24 6 18 4 14 5 C17 9 22 11 25 14 Z" fill="#fde047"/>
+                <path d="M38 12 C40 6 46 4 50 5 C47 9 42 11 39 14 Z" fill="#fde047"/>
+                <!-- Glowing Ruby Eyes -->
+                <circle cx="28" cy="22" r="2.2" fill="#ef4444"/>
+                <circle cx="36" cy="22" r="2.2" fill="#ef4444"/>
+                <!-- Snout & Teeth -->
+                <path d="M28 30 C30 33 34 33 36 30" stroke="#451a03" stroke-width="1.5" fill="none"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-vip">AUTO săn boss theo số lượng, tự vào ẩn bằng Vàng hoặc KC</span>.
+              <span class="feature-subtext">Tự săn các map, tự chọn boss, thêm số lượng; Bỏ qua hoặc KS boss tự chọn %HP.</span>
+            </div>
+          </div>
+
+          <!-- Item 3: Mắt Ẩn Thần Bí & Nhớ Skin Map Ẩn -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Arcane Portal & Stealth Eye SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <radialGradient id="portalGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="40%" stop-color="#60a5fa"/>
+                    <stop offset="80%" stop-color="#1e3a8a"/>
+                    <stop offset="100%" stop-color="#020617"/>
+                  </radialGradient>
+                </defs>
+                <!-- Arcane Outer Ring -->
+                <circle cx="32" cy="32" r="24" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="6 3"/>
+                <!-- Portal Center -->
+                <ellipse cx="32" cy="32" rx="20" ry="12" fill="url(#portalGlow)" stroke="#93c5fd" stroke-width="1.5"/>
+                <!-- Glowing Mystic Eye -->
+                <ellipse cx="32" cy="32" rx="10" ry="6" fill="#0f172a" stroke="#fde047" stroke-width="1.2"/>
+                <circle cx="32" cy="32" r="3.5" fill="#fde047"/>
+                <circle cx="33" cy="31" r="1.2" fill="#ffffff"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-vip">Nhớ SKIN MAP ẨN do người dùng tự đặt</span>.
+              <span class="feature-subtext">Thống kê chi tiết số lần vào ẩn & số lượng boss đã farm tự động.</span>
+            </div>
+          </div>
+
+          <!-- Item 4: Pha Lê Tọa Độ & Quay Về Bãi Quái -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Floating Celestial Crystal SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="crystalFacet" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="40%" stop-color="#93c5fd"/>
+                    <stop offset="75%" stop-color="#2563eb"/>
+                    <stop offset="100%" stop-color="#1e3a8a"/>
+                  </linearGradient>
+                </defs>
+                <!-- Orbiting Energy Ring -->
+                <ellipse cx="32" cy="32" rx="26" ry="8" fill="none" stroke="#93c5fd" stroke-width="2" transform="rotate(-30 32 32)"/>
+                <!-- Octahedral Crystal -->
+                <polygon points="32,8 48,32 32,56 16,32" fill="url(#crystalFacet)" stroke="#bfdbfe" stroke-width="1.5"/>
+                <!-- Front Facets -->
+                <polygon points="32,8 32,56 48,32" fill="#3b82f6" opacity="0.6"/>
+                <polygon points="32,18 42,32 32,46 22,32" fill="#ffffff" opacity="0.45"/>
+                <!-- Energy Sparkles -->
+                <circle cx="14" cy="22" r="2" fill="#60a5fa"/>
+                <circle cx="49" cy="42" r="2.5" fill="#60a5fa"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-vip">Nhớ tọa độ và tự quay lại bãi quái</span>.
+              <span class="feature-subtext">Khi hết boss hoặc đã đủ số lượng boss chỉ định, tự quay lại farm không lãng phí 1 giây.</span>
+            </div>
+          </div>
+
+          <!-- Item 5: Tách Đồ Bộ & Giữ Dòng Ngon -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Legendary Weapons Disassemble SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="fireAxe" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fde047"/>
+                    <stop offset="50%" stop-color="#ea580c"/>
+                    <stop offset="100%" stop-color="#991b1b"/>
+                  </linearGradient>
+                  <linearGradient id="iceSword" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#38bdf8"/>
+                    <stop offset="100%" stop-color="#1d4ed8"/>
+                  </linearGradient>
+                </defs>
+                <!-- Crossed Fire Blade -->
+                <path d="M12 52 L50 14 M12 48 L16 52 M46 10 L54 18" stroke="url(#fireAxe)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Crossed Frost Blade -->
+                <path d="M52 52 L14 14 M48 52 L52 48 M18 10 L10 18" stroke="url(#iceSword)" stroke-width="3" stroke-linecap="round"/>
+                <!-- Central Runic Ring / Shield -->
+                <circle cx="32" cy="32" r="10" fill="#0f172a" stroke="#f5b324" stroke-width="1.8"/>
+                <path d="M28 32 L31 36 L36 28" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-vip">AUTO tách đồ bộ tự chọn - trang sức, vũ khí, phòng cụ</span>.
+              <span class="feature-subtext">Tách sạch dòng rác, GIỮ DÒNG NGON (Giữ nhẫn, dây chuyền có Skin đồ DUNG).</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer / Price Button -->
+        <div class="card-footer">
+          <a href="javascript:void(0)" class="price-pill price-gold" onclick="openOrderModal('Bản VIP', '600.000đ')">
+            GIÁ : 600K
+          </a>
+          <div class="footer-guarantee">
+            <svg viewBox="0 0 20 20"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm4.5 7.5l-6 6c-.3.3-.7.3-1 0l-3-3c-.3-.3-.3-.7 0-1s.7-.3 1 0l2.5 2.5 5.5-5.5c.3-.3.7-.3 1 0s.3.7 0 1z"/></svg>
+            Bản được game thủ săn Boss tin dùng nhiều nhất
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- CARD 3: GÓI SUPER VIP                                              -->
+      <!-- =================================================================== -->
+      <div class="pricing-card card-super" id="cardSuperVip" style="display: none;">
+
+        <!-- SVG Corner Ornaments -->
+        <svg class="card-corner corner-tl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#purpleGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fbb6ce" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-tr" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#purpleGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fbb6ce" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-bl" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#purpleGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fbb6ce" opacity="0.9"/>
+        </svg>
+        <svg class="card-corner corner-br" viewBox="0 0 30 30" fill="none">
+          <path d="M0 0 H28 V6 H6 V28 H0 Z" fill="url(#purpleGoldGrad)"/>
+          <circle cx="10" cy="10" r="2.5" fill="#fbb6ce" opacity="0.9"/>
+        </svg>
+
+        <!-- Top Badge -->
+        <div class="card-header-badge badge-super">
+          <div class="badge-icon-wrap badge-icon-super">
+            <!-- Mythic Winged Diamond SVG -->
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
+              <polygon points="12,2 21,9 12,22 3,9"/>
+            </svg>
+          </div>
+          <span class="badge-title badge-title-super">SUPER VIP</span>
+        </div>
+
+        <!-- Features List -->
+        <div class="feature-list">
+          
+          <!-- Item 1: TOP Sv LH -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- High-Fidelity Celestial Crown SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <defs>
+                  <linearGradient id="crownGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#fdf2f8"/>
+                    <stop offset="40%" stop-color="#f472b6"/>
+                    <stop offset="70%" stop-color="#db2777"/>
+                    <stop offset="100%" stop-color="#831843"/>
+                  </linearGradient>
+                </defs>
+                <path d="M8 44 L4 18 L18 28 L32 10 L46 28 L60 18 L56 44 Z" fill="url(#crownGrad)" stroke="#fde047" stroke-width="2"/>
+                <rect x="8" y="46" width="48" height="8" rx="3" fill="#d97706" stroke="#fde047" stroke-width="1.5"/>
+                <circle cx="32" cy="30" r="4" fill="#ffffff" stroke="#ec4899" stroke-width="1"/>
+                <circle cx="18" cy="38" r="3" fill="#fde047"/>
+                <circle cx="46" cy="38" r="3" fill="#fde047"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-super">TOP Server Liên Hỏa (TOP Sv LH)</span>.
+              <span class="feature-subtext">Đẳng cấp tối thượng dành riêng cho cao thủ Đua Top Liên Server.</span>
+            </div>
+          </div>
+
+          <!-- Item 2: Độc quyền tính năng -->
+          <div class="feature-item">
+            <div class="icon-container">
+              <!-- Cosmic Power Sphere SVG -->
+              <svg class="icon-svg-art" viewBox="0 0 64 64">
+                <circle cx="32" cy="32" r="20" fill="url(#purpleSphereGrad)" stroke="#f472b6" stroke-width="2"/>
+                <ellipse cx="32" cy="32" rx="26" ry="9" fill="none" stroke="#fbcfe8" stroke-width="1.8" transform="rotate(30 32 32)"/>
+                <circle cx="32" cy="32" r="7" fill="#ffffff" opacity="0.85"/>
+              </svg>
+            </div>
+            <div class="feature-content">
+              • <span class="feature-highlight-super">Tất cả đặc quyền VIP + Đỉnh Phong Tuyệt Đối</span>.
+              <span class="feature-subtext">Tối ưu hóa PK Liên Đấu, chiếm bãi VIP, áp đảo toàn diện mọi đối thủ.</span>
+            </div>
+          </div>
+
+          <!-- Item 3: Coming Soon Banner Box -->
+          <div class="feature-item" style="border-bottom: none; flex: 1; display: flex; align-items: stretch; margin-top: 6px;">
+            <div style="width: 100%; text-align: center; padding: 28px 16px; background: rgba(80, 20, 100, 0.38); border: 1.5px dashed rgba(244, 114, 182, 0.7); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <div style="font-family: var(--font-heading); font-size: 21px; font-weight: 900; letter-spacing: 4px; color: #f472b6; text-shadow: 0 0 16px rgba(244, 114, 182, 0.9);">
+                .C.O.M.I.N.G . S.O.O.N.
+              </div>
+              <div style="font-size: 13px; color: #cbd5e1; margin-top: 10px; line-height: 1.5;">
+                Đang hoàn thiện & thử nghiệm độc quyền<br>dành riêng cho TOP Server
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer / Price Button -->
+        <div class="card-footer">
+          <a href="javascript:void(0)" class="price-pill price-super" onclick="openOrderModal('Gói Super VIP', 'LIÊN HỆ')">
+            LIÊN HỆ
+          </a>
+          <div class="footer-guarantee">
+            <svg viewBox="0 0 20 20"><path d="M10 0C4.5 0 0 4.5 0 10s4.5 10 10 10 10-4.5 10-10S15.5 0 10 0zm4.5 7.5l-6 6c-.3.3-.7.3-1 0l-3-3c-.3-.3-.3-.7 0-1s.7-.3 1 0l2.5 2.5 5.5-5.5c.3-.3.7-.3 1 0s.3.7 0 1z"/></svg>
+            Phiên bản giới hạn • Đăng ký nhận thông báo sớm
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Contact & Support Banner (Cleaned, no buttons) -->
+    <div class="contact-banner">
+      <div class="contact-info">
+        <span class="contact-title">⚡ HỖ TRỢ CÀI ĐẶT & KÍCH HOẠT NHANH 24/7</span>
+        <span class="contact-desc">Tool an toàn tuyệt đối, cập nhật tự động theo phiên bản mới nhất của MU Vĩnh Hằng.</span>
+      </div>
+    </div>
+
+    </div> <!-- Close .main-wrapper -->
+  </div> <!-- Close #captureArea (Khu vực chụp ảnh trọn vẹn) -->
+
+  <!-- Bottom Mode Switcher & Tools (Nằm hoàn toàn ngoài khu vực chụp ảnh) -->
+  <div class="bottom-toggle-wrapper no-capture">
+    <div class="bottom-controls-row">
+      <!-- 2 Gói vs 3 Gói Switcher -->
+      <div class="toggle-pill">
+        <div class="toggle-item active" id="tab2Goi" onclick="switchLayout(2)">
+          <span>⚔️ 2 Gói (Ảnh mẫu)</span>
+        </div>
+        <div class="toggle-item" id="tab3Goi" onclick="switchLayout(3)">
+          <span>🔥 3 Gói (+ Super VIP)</span>
+        </div>
+      </div>
+
+      <!-- Capture Button -->
+      <button class="btn-capture" id="btnCapture" onclick="captureAndSaveScreen()" title="Tự động chụp và lưu ảnh vùng thông tin kèm background">
+        <span class="btn-capture-icon">📸</span>
+        <span>Chụp & Lưu Ảnh</span>
+      </button>
+    </div>
+    <span class="bottom-toggle-hint">⚙️ Tự động xuất ảnh chất lượng cao kèm Background (Lưu file dạng: Screen_YYYYMMDD_HHmmss.png)</span>
+  </div>
+
+  <!-- SVG Gradients Definition -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#fff2a3"/>
+        <stop offset="50%" stop-color="#e2a632"/>
+        <stop offset="100%" stop-color="#8c580d"/>
+      </linearGradient>
+
+      <linearGradient id="blueGoldGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#93c5fd"/>
+        <stop offset="50%" stop-color="#3b82f6"/>
+        <stop offset="100%" stop-color="#ffd066"/>
+      </linearGradient>
+
+      <linearGradient id="purpleGoldGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#fbb6ce"/>
+        <stop offset="50%" stop-color="#c084fc"/>
+        <stop offset="100%" stop-color="#ffd066"/>
+      </linearGradient>
+
+      <radialGradient id="purpleSphereGrad" cx="35%" cy="35%" r="70%">
+        <stop offset="0%" stop-color="#fed7e2"/>
+        <stop offset="50%" stop-color="#b83280"/>
+        <stop offset="100%" stop-color="#4a154b"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- Modal Order / Contact -->
+  <div class="modal-overlay" id="orderModal" onclick="closeOrderModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+      <div class="modal-title">⚔️ KÍCH HOẠT TOOL ⚔️</div>
+      <div class="modal-body">
+        Bạn đang chọn gói: <span class="modal-pkg-name" id="modalPkgName">Bản VIP</span><br>
+        Mức giá: <span class="modal-pkg-name" id="modalPkgPrice">600K</span><br><br>
+        Vui lòng liên hệ Admin qua kênh hỗ trợ bên dưới để được cấp key kích hoạt và hướng dẫn cài đặt trong 2 phút!
+      </div>
+      <div class="modal-actions">
+        <button class="btn-contact btn-zalo" style="justify-content: center; height: 44px;" onclick="handleContactAction('Zalo')">
+          👉 Nhắn Tin Zalo Admin
+        </button>
+        <button class="btn-contact btn-copy" style="justify-content: center; height: 44px;" onclick="handleContactAction('Telegram')">
+          ✈️ Nhắn Tin Telegram
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-msg" id="toastMsg">
+    <span>✓</span> <span id="toastContent">Đã sao chép thông tin!</span>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- [SCRIPTS: INTERACTIVITY, SOUND, PARTICLES]                                -->
+  <!-- ========================================================================= */
+  -->
+  <script>
+    // 1. Audio Synthesis using Web Audio API
+    let audioCtx = null;
+    let isSoundMuted = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playFantasyChime(type = 'click') {
+      if (isSoundMuted) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(587.33, now); // D5
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'badge') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.2); // C6
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }
+      } catch (e) {
+        console.warn('Audio play error:', e);
+      }
+    }
+
+    // Toggle Sound Button
+    const btnSoundToggle = document.getElementById('btnSoundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    btnSoundToggle.addEventListener('click', () => {
+      isSoundMuted = !isSoundMuted;
+      soundIcon.textContent = isSoundMuted ? '🔇' : '🔊';
+      showToast(isSoundMuted ? 'Đã tắt âm thanh hiệu ứng' : 'Đã bật âm thanh hiệu ứng');
+      if (!isSoundMuted) playFantasyChime('badge');
+    });
+
+    // Toggle Fullscreen
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    btnFullscreen.addEventListener('click', () => {
+      playFantasyChime('click');
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    // 2. Switch Layout (2 Gói chuẩn ảnh mẫu vs 3 Gói gồm Super VIP)
+    function switchLayout(mode) {
+      playFantasyChime('badge');
+      const grid = document.getElementById('pricingGrid');
+      const cardSuper = document.getElementById('cardSuperVip');
+      const tab2 = document.getElementById('tab2Goi');
+      const tab3 = document.getElementById('tab3Goi');
+
+      if (mode === 2) {
+        grid.className = 'pricing-grid grid-2';
+        cardSuper.style.display = 'none';
+        tab2.classList.add('active');
+        tab3.classList.remove('active');
+      } else {
+        grid.className = 'pricing-grid grid-3';
+        cardSuper.style.display = 'flex';
+        tab3.classList.add('active');
+        tab2.classList.remove('active');
+      }
+    }
+
+    // 3. Modal Order & Contact
+    function openOrderModal(pkgName, price) {
+      playFantasyChime('badge');
+      document.getElementById('modalPkgName').textContent = pkgName;
+      document.getElementById('modalPkgPrice').textContent = price;
+      document.getElementById('orderModal').classList.add('open');
+    }
+
+    function closeOrderModal(e) {
+      if (e) e.stopPropagation();
+      playFantasyChime('click');
+      document.getElementById('orderModal').classList.remove('open');
+    }
+
+    function handleContactAction(channel) {
+      playFantasyChime('click');
+      showToast(`Đang kết nối tới ${channel} hỗ trợ...`);
+      setTimeout(() => {
+        closeOrderModal();
+      }, 900);
+    }
+
+    function copyContactInfo() {
+      playFantasyChime('click');
+      const textToCopy = "VỤT MOD TEAM - TOOL AUTO MU VĨNH HẰNG\nBản Thường: 400K\nBản VIP: 600K\nGói Super VIP: Sắp ra mắt\nLiên hệ Admin để kích hoạt ngay!";
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast('Đã sao chép bảng giá vào bộ nhớ tạm!');
+        }).catch(() => {
+          showToast('Đã lưu thông tin bảng giá!');
+        });
+      } else {
+        showToast('Đã lưu thông tin bảng giá!');
+      }
+    }
+
+    // 4. Toast Notification
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      const content = document.getElementById('toastContent');
+      content.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // 5. Canvas Floating Fire Embers Animation
+    (function initEmbers() {
+      const canvas = document.getElementById('embersCanvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const particleCount = 45;
+      const particles = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height + height,
+          radius: Math.random() * 2 + 1,
+          speedY: Math.random() * 1.2 + 0.5,
+          speedX: (Math.random() - 0.5) * 0.6,
+          opacity: Math.random() * 0.8 + 0.2,
+          color: Math.random() > 0.4 ? '#ff9a3c' : (Math.random() > 0.5 ? '#ffd466' : '#60a5fa'),
+          flicker: Math.random() * 0.05
+        });
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.y -= p.speedY;
+          p.x += p.speedX;
+          p.opacity += (Math.random() - 0.5) * p.flicker;
+          if (p.opacity < 0.1) p.opacity = 0.2;
+          if (p.opacity > 0.9) p.opacity = 0.85;
+
+          if (p.y < -10) {
+            p.y = height + 10;
+            p.x = Math.random() * width;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.opacity;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = p.color;
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(render);
+      }
+
+      render();
+    })();
+
+    // 6. Screenshot & Automatic File Saving
+    function getFormattedTimestamp() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      const mm = pad(now.getMonth() + 1);
+      const dd = pad(now.getDate());
+      const hh = pad(now.getHours());
+      const mi = pad(now.getMinutes());
+      const ss = pad(now.getSeconds());
+      return `Screen_${yyyy}${mm}${dd}_${hh}${mi}${ss}.png`;
+    }
+
+    // Đảm bảo toàn bộ ảnh đều là Base64 Data URI sạch (không bị taint canvas trên file:///)
+    function applyBase64Assets() {
+      if (window.BG_IMAGE_DATA) {
+        const bgLayers = document.querySelectorAll('.capture-bg-layer, .bg-layer');
+        bgLayers.forEach(el => el.style.backgroundImage = `url("${window.BG_IMAGE_DATA}")`);
+      }
+      if (window.LOGO_IMAGE_DATA) {
+        const logoImgs = document.querySelectorAll('.brand-logo-small');
+        logoImgs.forEach(el => el.src = window.LOGO_IMAGE_DATA);
+      }
+    }
+
+    // Chuyển đổi Canvas sang Blob an toàn tuyệt đối, có fallback sang DataURL
+    function canvasToBlobSafe(canvas) {
+      return new Promise((resolve, reject) => {
+        try {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              try {
+                const dataUrl = canvas.toDataURL('image/png');
+                const byteString = atob(dataUrl.split(',')[1]);
+                const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                  ia[i] = byteString.charCodeAt(i);
+                }
+                resolve(new Blob([ab], { type: mimeString }));
+              } catch (fallbackErr) {
+                reject(fallbackErr);
+              }
+            }
+          }, 'image/png');
+        } catch (toBlobErr) {
+          try {
+            const dataUrl = canvas.toDataURL('image/png');
+            const byteString = atob(dataUrl.split(',')[1]);
+            const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            resolve(new Blob([ab], { type: mimeString }));
+          } catch (fallbackErr2) {
+            reject(toBlobErr);
+          }
+        }
+      });
+    }
+
+    async function saveImageBlob(blob, defaultFileName) {
+      // Ưu tiên 1: Hộp thoại "Save As" nguyên bản của Windows / Browser (File System Access API)
+      if (typeof window.showSaveFilePicker === 'function') {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: 'Ảnh PNG (*.png)',
+              accept: { 'image/png': ['.png'] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          showToast(`Đã lưu ảnh: ${handle.name}`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            showToast('Đã hủy thao tác lưu ảnh');
+            return;
+          }
+          console.warn('showSaveFilePicker không khả dụng, chuyển sang tải thường:', err);
+        }
+      }
+
+      // Ưu tiên 2: Tự động kích hoạt Download của trình duyệt
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = defaultFileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast(`Đã tải ảnh về máy: ${defaultFileName}`);
+    }
+
+    async function captureAndSaveScreen() {
+      const btn = document.getElementById('btnCapture');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="btn-capture-icon">⏳</span><span>Đang xử lý ảnh...</span>';
+
+      const captureNode = document.getElementById('captureArea');
+      const fileName = getFormattedTimestamp();
+
+      // Tạm ẩn canvas hạt lửa để ảnh chụp tĩnh không bị đốm vụn
+      const embers = document.getElementById('embersCanvas');
+      const origEmbersDisplay = embers ? embers.style.display : '';
+      if (embers) embers.style.display = 'none';
+
+      // Đảm bảo tài nguyên nền và logo đã ở định dạng Base64 Data URI
+      applyBase64Assets();
+
+      try {
+        let blob = null;
+        const isLocalFile = window.location.protocol === 'file:';
+
+        // Trên web server (http/https): Có thể thử htmlToImage
+        // Trên local file (file:///): Bắt buộc dùng html2canvas (vì Chrome chặn foreignObject SVG trên file:///)
+        if (!isLocalFile && window.htmlToImage && typeof window.htmlToImage.toBlob === 'function') {
+          try {
+            blob = await window.htmlToImage.toBlob(captureNode, {
+              pixelRatio: 2,
+              quality: 1,
+              skipFonts: true,
+              fontEmbedCSS: '',
+              filter: (node) => !node.classList?.contains('no-capture')
+            });
+          } catch (errHtmlToImage) {
+            console.warn('htmlToImage không khả dụng, chuyển sang html2canvas fallback:', errHtmlToImage);
+          }
+        }
+
+        // html2canvas Engine chuẩn: Chống Tainted Canvas 100% bằng allowTaint: false & Base64 Assets
+        if (!blob && window.html2canvas) {
+          const canvas = await html2canvas(captureNode, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false, // Bắt buộc false để canvas không bao giờ bị dán nhãn tainted
+            backgroundColor: '#06080d',
+            logging: false,
+            imageTimeout: 0,
+            ignoreElements: (node) => node.classList?.contains('no-capture')
+          });
+          blob = await canvasToBlobSafe(canvas);
+        }
+
+        if (blob) {
+          await saveImageBlob(blob, fileName);
+        } else {
+          showToast('Không thể tạo file ảnh, vui lòng thử lại!');
+        }
+      } catch (err) {
+        console.error('Lỗi khi chụp màn hình:', err);
+        showToast('Lỗi khi xuất ảnh: ' + (err.message || 'Thất bại'));
+      } finally {
+        if (embers) embers.style.display = origEmbersDisplay;
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
+
+    // Tự động kích hoạt nạp Base64 ngay khi DOM sẵn sàng
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyBase64Assets);
+    } else {
+      applyBase64Assets();
+    }
+  </script>
+</body>
+</html>

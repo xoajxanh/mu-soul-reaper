@@ -1,0 +1,331 @@
+-- =========================================================================
+-- [TEST SCRIPT]: AUTO HANG DONG VANG - BAT MUC TIEU 0MS, HUT ReqPickUpMapItem & BAO VANG KHOA
+-- =========================================================================
+
+local logLines = {}
+local function writeLog(msg)
+    local line = string.format("[%s] %s", os.date("%H:%M:%S"), tostring(msg))
+    table.insert(logLines, line)
+end
+
+local function saveLogToFile()
+    pcall(function()
+        local outText = table.concat(logLines, "\n")
+        local outPath = CS.UnityEngine.Application.persistentDataPath .. "/output.txt"
+        local f = io.open(outPath, "w")
+        if f then
+            f:write(outText)
+            f:close()
+        end
+    end)
+end
+
+local function showMsg(msg)
+    pcall(function()
+        if _G.FloatingWordUtility and _G.FloatingWordUtility.QuickMsg then
+            _G.FloatingWordUtility.QuickMsg(msg)
+        end
+    end)
+end
+
+-- 1. Lay so luong Kim Phieu (1000193)
+local function GetTicketCount()
+    local c = 0
+    pcall(function()
+        if _G.BagInfoData and _G.BagInfoData.GetItemTotalCountByItemId then
+            c = _G.BagInfoData.GetItemTotalCountByItemId(1000193) or 0
+        end
+    end)
+    return c
+end
+
+-- 2. Lay & dinh dang so Vang Khoa hien tai (1000021)
+local function GetBoundGoldCount()
+    local gold = 0
+    pcall(function()
+        if _G.BagInfoData then
+            if _G.BagInfoData.CoinInfos and _G.BagInfoData.CoinInfos[1000021] then
+                gold = _G.BagInfoData.CoinInfos[1000021]
+            elseif _G.BagInfoData.GetItemCountByItemConfigId then
+                gold = _G.BagInfoData.GetItemCountByItemConfigId(1000021) or 0
+            end
+        end
+    end)
+    return gold
+end
+
+local function FormatNumber(n)
+    local s = tostring(math.floor(tonumber(n) or 0))
+    local k
+    while true do
+        s, k = string.gsub(s, "^(-?%d+)(%d%d%d)", "%1,%2")
+        if k == 0 then break end
+    end
+    return s
+end
+
+-- 3. Quet coc vang tren mat dat (ViewData + VipManager)
+local function GetGroundGoldItems()
+    local items = {}
+    local seen = {}
+
+    pcall(function()
+        if _G.ViewData and _G.ViewData.GetGameObjectsInView then
+            local objs = _G.ViewData.GetGameObjectsInView()
+            if objs then
+                for id, obj in pairs(objs) do
+                    if obj and not seen[id] then
+                        local isDrop = (obj.item ~= nil) or (obj.dropTime ~= nil) or (obj.configID == 1000021) or (obj.type == 103)
+                        if isDrop then
+                            seen[id] = true
+                            local itemId = (obj.item and obj.item.itemId) or obj.configID or obj.itemId or 0
+                            local name = obj.name or "Vang Khoa"
+                            local count = (obj.item and obj.item.count) or 1
+                            local x = obj.x or (obj.serverCoord and obj.serverCoord.x) or 0
+                            local y = obj.y or (obj.serverCoord and obj.serverCoord.y) or 0
+                            table.insert(items, { id = id, itemId = itemId, name = name, count = count, x = x, y = y })
+                        end
+                    end
+                end
+            end
+        end
+    end)
+
+    pcall(function()
+        if _G.VipManager and _G.VipManager.Update then
+            local _, val = debug.getupvalue(_G.VipManager.Update, 1)
+            if type(val) == "table" then
+                for id, itemObj in pairs(val) do
+                    if not seen[id] then
+                        seen[id] = true
+                        local d = itemObj and (itemObj.data or itemObj)
+                        local itemId = (d and d.item and d.item.itemId) or (d and d.configID) or (d and d.itemId) or 0
+                        local name = (d and d.name) or "Vang Khoa"
+                        local count = (d and d.item and d.item.count) or 1
+                        local x = (d and d.x) or (itemObj.x) or 0
+                        local y = (d and d.y) or (itemObj.y) or 0
+                        table.insert(items, { id = id, itemId = itemId, name = name, count = count, x = x, y = y })
+                    end
+                end
+            end
+        end
+    end)
+
+    return items
+end
+
+-- 4. Kiem tra Than Rong Vang (Bo CanSelect de bat muc tieu 0ms ngay khi rong moi dap xuong)
+local function CheckDragonStatus()
+    local monsterRoles = _G.RoleManager and _G.RoleManager.GetRolesByType and _G.RoleManager.GetRolesByType(2)
+    if not monsterRoles then return nil, false end
+
+    for lid, role in pairs(monsterRoles) do
+        if role then
+            local cfgId = (role.GetConfigId and role:GetConfigId()) or role.configId or (role.data and role.data.configId)
+            local roleName = role.name or (role.data and role.data.name) or ""
+            if cfgId == 20220001 or string.find(roleName, "Rong Vang") or string.find(roleName, "Rồng Vàng") then
+                local hp = role.hp or (role.data and role.data.hp)
+                local isAlive = not role.isDead and (not hp or hp > 0)
+                return role, isAlive
+            end
+        end
+    end
+    return nil, false
+end
+
+-- 5. Ban goi hut vat pham ReqPickUpMapItem
+local function PickupGold(items)
+    if not items or #items == 0 then return end
+    local batchIds = {}
+    for _, it in ipairs(items) do
+        table.insert(batchIds, it.id)
+        pcall(function()
+            if _G.PickupManager and _G.PickupManager.ReqPickUpMapItem then
+                _G.PickupManager.ReqPickUpMapItem(it.id)
+            elseif _G.networkRequest and _G.networkRequest.ReqPickUpMapItem then
+                _G.networkRequest.ReqPickUpMapItem(it.id)
+            end
+        end)
+    end
+    pcall(function()
+        if _G.PickupManager and _G.PickupManager.ReqPickUpMapItems then
+            _G.PickupManager.ReqPickUpMapItems(batchIds)
+        elseif _G.networkRequest and _G.networkRequest.ReqPickUpMapItems then
+            _G.networkRequest.ReqPickUpMapItems(batchIds)
+        end
+    end)
+end
+
+-- 6. Thoat pho ban & Vao Hang Dong Vang
+local function ExitDungeon()
+    pcall(function()
+        if _G.TranScriptController and _G.TranScriptController.ReqExitInstance then
+            _G.TranScriptController.ReqExitInstance()
+        elseif _G.NetManager and _G.MapMessage and _G.MapMessage.ReqExitInstance then
+            _G.NetManager.Send(_G.MapMessage.ReqExitInstance)
+        end
+    end)
+end
+
+local function JoinGoldCaves()
+    pcall(function()
+        if _G.networkRequest and _G.networkRequest.ReqJoinGoldCaves then
+            _G.networkRequest.ReqJoinGoldCaves(1, 1)
+        elseif _G.NetManager and _G.MapMessage and _G.MapMessage.ReqJoinGoldCaves then
+            _G.NetManager.Send(_G.MapMessage.ReqJoinGoldCaves, { type = 1, count = 1 })
+        end
+    end)
+end
+
+-- -------------------------------------------------------------------------
+-- KHOI TAO BIEN TRANG THAI VONG LAP TEST
+-- -------------------------------------------------------------------------
+_G.Mod_Test_AutoKimPhieu_Runs = _G.Mod_Test_AutoKimPhieu_Runs or 0
+_G.Mod_Test_SawDragon = false
+_G.Mod_Test_DragonDeadTime = nil
+_G.Mod_Test_SawGold = false
+_G.Mod_Test_EnterMapTime = 0
+_G.Mod_Test_LastJoinTime = 0
+_G.Mod_Test_LastExitTime = 0
+
+writeLog("=========================================================================")
+writeLog(">>> TEST AUTO HANG DONG VANG (0MS TARGET + ReqPickUpMapItem + VANG KHOA) <<<")
+writeLog("Thoi gian: " .. os.date("%Y/%m/%d %H:%M:%S"))
+writeLog(string.format("Kim Phieu: %d | Vang Khoa hien tai: %s", GetTicketCount(), FormatNumber(GetBoundGoldCount())))
+writeLog("=========================================================================")
+
+local timerName = "Mod_TestAutoKimPhieuLoop"
+if _G.Mod_StopTimer then
+    _G.Mod_StopTimer(timerName)
+end
+
+local startLoop = _G.Mod_StartTrackedTimer or function(name, interval, count, cb)
+    if _G.Timer and _G.Timer.StartLoopForever then
+        return _G.Timer.StartLoopForever(interval, cb)
+    elseif _G.Timer and _G.Timer.StartLoop then
+        return _G.Timer.StartLoop(interval, -1, cb)
+    end
+end
+
+startLoop(timerName, 0.25, -1, function()
+    local me = _G.RoleManager and _G.RoleManager.me
+    if not me or me.isDead then return end
+
+    local nowTime = CS.UnityEngine.Time.realtimeSinceStartup
+    local curMapId = (_G.SceneData and _G.SceneData.mapId) or (me.mapId) or 0
+
+    -- =========================================================================
+    -- TRUONG HOP 1: DANG O NGOAI BAN DO (LORENCIA / MAP KHAC)
+    -- =========================================================================
+    if curMapId ~= 260001 then
+        _G.Mod_Test_SawDragon = false
+        _G.Mod_Test_DragonDeadTime = nil
+        _G.Mod_Test_SawGold = false
+        _G.Mod_Test_EnterMapTime = 0
+        _G.Mod_Test_LastExitTime = 0
+
+        if nowTime - (_G.Mod_Test_LastJoinTime or 0) < 2.0 then return end
+
+        local tickets = GetTicketCount()
+        local curGoldStr = FormatNumber(GetBoundGoldCount())
+        if tickets <= 0 then
+            writeLog(string.format("🎉 DA HET KIM PHIEU! Xong %d luot | Vang khoa: %s", _G.Mod_Test_AutoKimPhieu_Runs, curGoldStr))
+            saveLogToFile()
+            showMsg(string.format("🎉 HET KIM PHIEU! Xong %d luot | Vang khoa: %s", _G.Mod_Test_AutoKimPhieu_Runs, curGoldStr))
+            if _G.Mod_StopTimer then _G.Mod_StopTimer(timerName) end
+            return
+        end
+
+        writeLog(string.format("🎫 Vao Hang Dong Vang (Con %d ve | Vang khoa: %s)...", tickets, curGoldStr))
+        saveLogToFile()
+        showMsg(string.format("🎫 VAO HANG DONG VANG (Con %d ve | Vang khoa: %s)", tickets, curGoldStr))
+        JoinGoldCaves()
+        _G.Mod_Test_LastJoinTime = nowTime
+        return
+    end
+
+    -- =========================================================================
+    -- TRUONG HOP 2: DANG TRONG HANG DONG VANG (MAP 260001) - BAT MUC TIEU 0MS
+    -- =========================================================================
+    _G.Mod_Test_LastJoinTime = 0
+    if _G.Mod_Test_EnterMapTime == 0 then
+        _G.Mod_Test_EnterMapTime = nowTime
+    end
+
+    if (_G.Mod_Test_LastExitTime or 0) > 0 and (nowTime - _G.Mod_Test_LastExitTime) < 1.5 then
+        return
+    end
+
+    local dragonRole, isAlive = CheckDragonStatus()
+
+    -- 2.1: RONG CON SONG -> BAT MUC TIEU & TU DANH NGAY TUC THI (0MS)
+    if dragonRole and isAlive then
+        _G.Mod_Test_SawDragon = true
+        _G.Mod_Test_DragonDeadTime = nil
+
+        pcall(function()
+            if me.SetTarget then me:SetTarget(dragonRole)
+            elseif me.SetTargetAvatar then me:SetTargetAvatar(dragonRole) end
+            if me.SetAutoFight then me:SetAutoFight("AutoFight") end
+            if _G.QiJiHelperData and _G.QiJiHelperData.SetAutoFightData then
+                _G.QiJiHelperData.SetAutoFightData(true)
+            end
+        end)
+        return
+    end
+
+    -- 2.2: MOI VAO MAP (< 1.5S) CHUA THAY RONG -> BAT SAN AUTOFIGHT DON DAU
+    local timeInMap = nowTime - (_G.Mod_Test_EnterMapTime or nowTime)
+    local goldItems = GetGroundGoldItems()
+    local goldCount = #goldItems
+
+    if not _G.Mod_Test_SawDragon and timeInMap < 1.5 and goldCount == 0 then
+        pcall(function()
+            if me.SetAutoFight then me:SetAutoFight("AutoFight") end
+            if _G.QiJiHelperData and _G.QiJiHelperData.SetAutoFightData then
+                _G.QiJiHelperData.SetAutoFightData(true)
+            end
+        end)
+        return
+    end
+
+    -- 2.3: RONG DA CHET -> QUET VANG VA HUT
+    if not _G.Mod_Test_DragonDeadTime then
+        _G.Mod_Test_DragonDeadTime = nowTime
+        writeLog("💥 THAN RONG VANG DA BI HA GUC!")
+        pcall(function()
+            if me.SetAutoFight then me:SetAutoFight("None") end
+            if _G.QiJiHelperData and _G.QiJiHelperData.SetAutoFightData then
+                _G.QiJiHelperData.SetAutoFightData(false)
+            end
+        end)
+    end
+
+    if goldCount > 0 then
+        _G.Mod_Test_SawGold = true
+        writeLog(string.format("💰 Thay %d coc vang -> Ban ReqPickUpMapItem...", goldCount))
+        saveLogToFile()
+        PickupGold(goldItems)
+    else
+        local elapsed = nowTime - _G.Mod_Test_DragonDeadTime
+        if _G.Mod_Test_SawGold or elapsed >= 1.5 then
+            _G.Mod_Test_AutoKimPhieu_Runs = (_G.Mod_Test_AutoKimPhieu_Runs or 0) + 1
+            local curGoldStr = FormatNumber(GetBoundGoldCount())
+            local remainTickets = GetTicketCount()
+            writeLog(string.format("✅ XONG LUOT #%d! Vang khoa: %s (Con %d ve) -> ReqExitInstance!", _G.Mod_Test_AutoKimPhieu_Runs, curGoldStr, remainTickets))
+            saveLogToFile()
+            showMsg(string.format("✅ XONG LUOT #%d! Vang khoa: %s (Con %d ve)", _G.Mod_Test_AutoKimPhieu_Runs, curGoldStr, remainTickets))
+
+            _G.Mod_Test_DragonDeadTime = nil
+            _G.Mod_Test_SawDragon = false
+            _G.Mod_Test_SawGold = false
+            _G.Mod_Test_EnterMapTime = 0
+            _G.Mod_Test_LastExitTime = nowTime
+
+            ExitDungeon()
+        end
+    end
+end)
+
+saveLogToFile()
+showMsg(string.format("🚀 AUTO KIM PHIEU 0MS ON! Vang khoa: %s", FormatNumber(GetBoundGoldCount())))
